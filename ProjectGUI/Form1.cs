@@ -15,7 +15,7 @@ using System.Windows.Media;
 namespace ProjectGUI
 {
    
-    public partial class Form1 : Form
+    public partial class Form1 : Form 
     {
         SerialPort serialPort; // Serial Port for Arduino
         double faceShift1; 
