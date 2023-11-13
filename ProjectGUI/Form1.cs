@@ -17,7 +17,7 @@ namespace ProjectGUI
    
     public partial class Form1 : Form
     {
-        SerialPort serialPort;
+        SerialPort serialPort; // Serial Port for Arduino
         double faceShift1; 
         double faceShift2; 
         double result;
@@ -25,8 +25,6 @@ namespace ProjectGUI
         public Form1()
         {
             InitializeComponent();
-            double result = PowerMeterDLL.GetValue();
-            textBox1.Text = result.ToString();
             serialPort = new SerialPort("COM5", 115200);
             try
             {
@@ -41,18 +39,18 @@ namespace ProjectGUI
         
         class PowerMeterDLL
         {
-            [DllImport("D:\\New folder\\PowerMeterDLL\\x64\\Release\\PowerMeterDLL.dll")]
-            public static extern double GetValue();
+            [DllImport("D:\\New folder\\PowerMeterDLL\\x64\\Release\\PowerMeterDLL.dll")] // path for Power Meter DLL library
+            public static extern double GetValue(); // method to call from DLL
         }
         class MeasurementEvaluation
         {
-            [DllImport("C:\\Users\\Mannan\\source\\repos\\MeasurementEvaluation\\x64\\Release\\MeasurementEvaluation.dll")]
-            public static extern unsafe double CalculateFaceShift(double* Power_mw, int arrayLength);
+            [DllImport("C:\\Users\\Mannan\\source\\repos\\MeasurementEvaluation\\x64\\Release\\MeasurementEvaluation.dll")]  // path for Measurement & Evaluation DLL
+            public static extern unsafe double CalculateFaceShift(double* Power_mw, int arrayLength); // method to call from DLL
         }
             private async void button3_Click(object sender, EventArgs e)
             {
-                ResultData withBeamSplitter = new ResultData();
-                result = PowerMeterDLL.GetValue();
+                ResultData withBeamSplitter = new ResultData(); 
+                result = PowerMeterDLL.GetValue(); 
                 textBox1.Text = result.ToString();
 
                 var series = new System.Windows.Forms.DataVisualization.Charting.Series("Reference");
@@ -61,19 +59,19 @@ namespace ProjectGUI
                 {
                     double anglevariable = 0.0;
                     double maxResultWithBeamSplitter = double.MinValue;
-                    List<ResultData> withBeamSplitterData = new List<ResultData>(); // Create a list to store the data
+                    List<ResultData> withBeamSplitterData = new List<ResultData>(); 
 
                
                     for (int i = 0; i < 200; i++)
                     {
-                        await Task.Delay(400);
+                        await Task.Delay(400); // delay required for reading value from power meter
                         result = PowerMeterDLL.GetValue();
                         textBox1.Text = result.ToString();
                         textBox2.Text = anglevariable.ToString();
                         withBeamSplitter.angle = anglevariable;
                         withBeamSplitter.result = result;
-                  
-                        series.Points.AddXY(withBeamSplitter.angle, withBeamSplitter.result);
+                   
+                        series.Points.AddXY(withBeamSplitter.angle, withBeamSplitter.result);  
 
                         anglevariable += 1.8;
                         if (serialPort.IsOpen)
@@ -81,6 +79,8 @@ namespace ProjectGUI
                             serialPort.Write("1");
                         }
                         withBeamSplitterData.Add(withBeamSplitter); // Add the ResultData object to the list
+
+                    //---------------- To Check the Maximum value achieved from read value -----------------//
                         if (result > maxResultWithBeamSplitter)
                         {
                             maxResultWithBeamSplitter = result;
@@ -90,8 +90,10 @@ namespace ProjectGUI
                         Console.WriteLine($"Angle: {withBeamSplitter.angle}, Result: {withBeamSplitter.result}");
 
                     }
-                    chart1.Series.Add(series);
+
+                    chart1.Series.Add(series);  // Draw the chart at the end of getting value
                     double[] dataArray = withBeamSplitterData.Select(rd => rd.result).ToArray();
+                //----------------------------------For Measurement and Evaluation___________________________//
                     unsafe
                     {
                         fixed (double* pData = dataArray)
@@ -152,7 +154,7 @@ namespace ProjectGUI
                 
                 for (int i = 0; i < 200; i++)
                 {
-                    await Task.Delay(400);
+                    await Task.Delay(400); // delay required for reading value from power meter
 
                     result = PowerMeterDLL.GetValue();
                     textBox1.Text = result.ToString();
@@ -168,7 +170,7 @@ namespace ProjectGUI
                         serialPort.Write("1");
                     }
                     withoutBeamSplitterData.Add(withoutBeamSplitter); // Add the ResultData object to the list
-
+                    //---------------- To Check the Maximum value achieved from read value -----------------//
                     if (result > maxResultWithoutBeamSplitter)
                     {
                         maxResultWithoutBeamSplitter = result;
@@ -180,7 +182,8 @@ namespace ProjectGUI
                 }
                 chart1.Series.Add(series);
 
-                double[] dataArray = withoutBeamSplitterData.Select(rd => rd.result).ToArray(); // Use the correct list
+                double[] dataArray = withoutBeamSplitterData.Select(rd => rd.result).ToArray();
+                //----------------------------------For Measurement and Evaluation___________________________//
                 unsafe
                 {
                     fixed (double* pData = dataArray)
