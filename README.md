@@ -14,7 +14,7 @@ ProjectGUI is a C# Windows Forms application that interfaces with a power meter 
 
 - [.NET Framework](https://dotnet.microsoft.com/download/dotnet-framework)
 - [PowerMeterDLL](https://github.com/Hafiz-Abdul-Mannan/PowerMeterDLL)
-- [MeasurementEvaluation DLL](https://link-to-your-measurement-evaluation-dll)
+- MeasurementEvaluation DLL
 
 ## Setup
 
